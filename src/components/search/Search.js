@@ -3,23 +3,25 @@ import { AllMovies } from '../AllMovies';
 import './style.css'
 
 export function Search() {
-    const [movies, setMovies] = useState(null);
-    // const [isLoading, setIsLoading] = useState(false);
+    const [movies, setMovies] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [query, setQuery] = useState("");
+
+    function handleChange(newQuery) {
+        setQuery(newQuery);
+    }
 
     function getData() {
-        document.getElementById('loading').style.visibility = 'visible';
-        var myInput = document.getElementById("myInput").value;
-        var url = `https://imdb-api.com/en/API/Search/k_sf83blu8/${myInput}`
-        // setIsLoading(true);
-        // console.log(isLoading)
+        var url = `https://imdb-api.com/en/API/Search/k_sf83blu8/${query}`
+        setIsLoading(true);
+
         fetch(url)
             .then(res => {
                 return res.json();
             })
             .then(data => {
                 setMovies(data.results)
-                // setIsLoading(false)
-                document.getElementById('loading').style.visibility = 'hidden';
+                setIsLoading(false)
             })
 
     }
@@ -27,12 +29,11 @@ export function Search() {
     return (
         <>
             <div>
-                <input type="text" id="myInput" placeholder="Search..."></input>
+                <input type="text" placeholder="Search..." onChange={(e) => handleChange(e.target.value)} ></input>
                 <button onClick={getData} type="submit">Search</button>
-                {movies && <AllMovies movies={movies} />}
             </div>
-            {/* {isLoading ? <div className="loader" /> : movies && <AllMovies movies={movies} />} */}
-            <div id="loading" className="loader">Loading...</div>
+
+            {isLoading ? <div className="loader" /> : <AllMovies movies={movies} />}
         </>
     )
 }
